@@ -3,24 +3,31 @@ import PackageDescription
 
 let package = Package(
     name: "MiseboxFeediOS",
+    platforms: [
+        .iOS(.v16)
+    ],
     products: [
         .library(
             name: "MiseboxFeediOS",
             targets: ["MiseboxFeediOS"]),
     ],
     dependencies: [
-        // Add dependencies here
-        .package(url: "https://github.com/firebase/firebase-ios-sdk.git", .upToNextMajor(from: "X.X.X"))
+        // Ensure these URLs and versions match the actual accessible locations and versions
+        .package(url: "https://github.com/ddddeano/FirebaseiOSMisebox.git", from: "1.1.7"),
+        .package(url: "https://github.com/ddddeano/GlobalMiseboxiOS.git", from: "1.0.38")
     ],
     targets: [
         .target(
             name: "MiseboxFeediOS",
             dependencies: [
-                // Add Firebase products you want to use here
-                .product(name: "FirebaseFirestore", package: "firebase-ios-sdk")
+                // Assuming the package products are named after the package itself
+                // Replace "FirebaseiOSMisebox" and "GlobalMiseboxiOS" with the actual product names if they differ
+                .product(name: "FirebaseiOSMisebox", package: "FirebaseiOSMisebox"),
+                .product(name: "GlobalMiseboxiOS", package: "GlobalMiseboxiOS")
             ]),
         .testTarget(
             name: "MiseboxFeediOSTests",
             dependencies: ["MiseboxFeediOS"]),
     ]
 )
+   // .package(url: "https://github.com/ddddeano/FirebaseiOSMisebox.git", from: "2.01.01"),
