@@ -30,4 +30,3 @@ let package = Package(
             dependencies: ["MiseboxFeediOS"]),
     ]
 )
-   // .package(url: "https://github.com/ddddeano/FirebaseiOSMisebox.git", from: "2.01.01"),
