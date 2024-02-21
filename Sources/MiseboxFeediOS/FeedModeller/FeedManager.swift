@@ -32,7 +32,7 @@ extension FeedManager {
 }
 
 extension MiseboxEcosystem {
-    enum PostRole {
+    public enum PostRole {
         case miseboxUser
         case chef
         case agent
