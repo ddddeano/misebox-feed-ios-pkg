@@ -2,14 +2,14 @@
 import PackageDescription
 
 let package = Package(
-    name: "MiseboxFeediOS",
+    name: "MiseboxiOSFeed",
     platforms: [
         .iOS(.v16)
     ],
     products: [
         .library(
-            name: "MiseboxFeediOS",
-            targets: ["MiseboxFeediOS"]),
+            name: "MiseboxiOSFeed",
+            targets: ["MiseboxiOSFeed"]),
     ],
     dependencies: [
         // Ensure these URLs and versions match the actual accessible locations and versions
@@ -18,7 +18,7 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "MiseboxFeediOS",
+            name: "MiseboxiOSFeed",
             dependencies: [
                 // Assuming the package products are named after the package itself
                 // Replace "FirebaseiOSMisebox" and "GlobalMiseboxiOS" with the actual product names if they differ
@@ -26,7 +26,7 @@ let package = Package(
                 .product(name: "GlobalMiseboxiOS", package: "GlobalMiseboxiOS")
             ]),
         .testTarget(
-            name: "MiseboxFeediOSTests",
-            dependencies: ["MiseboxFeediOS"]),
+            name: "MiseboxiOSFeedTests",
+            dependencies: ["MiseboxiOSFeed"]),
     ]
 )
