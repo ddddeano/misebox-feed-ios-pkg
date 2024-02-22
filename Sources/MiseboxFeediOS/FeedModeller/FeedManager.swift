@@ -1,128 +1,112 @@
 import Foundation
-import FirebaseiOSMisebox
 import FirebaseFirestore
-import GlobalMiseboxiOS
 import SwiftUI
+import GlobalMiseboxiOS
+import FirebaseiOSMisebox
 
-public protocol RolePost {
+@MainActor
+public final class FeedManager: ObservableObject {
+    @Published public var posts: [Post] = []
+    public let role: MiseboxEcosystem.Role
+    let firestoreManager = FirestoreManager()
+
+    public var listener: ListenerRegistration?
+
+    public init(role: MiseboxEcosystem.Role) {
+        self.role = role
+    }
+
+    deinit {
+        listener?.remove()
+    }
+
+    public func reset() {
+        posts = []
+    }
+
+    public static func createPost(title: String, content: String, role: MiseboxEcosystem.Role, postType: PostType, timestamp: Date = Date(), additionalData: [String: Any] = [:]) async throws {
+    }
+
+    private func subscribeToPostsFilteredByRole() {
+    }
 }
 
 extension FeedManager {
+    public enum PostType {
+        case chef(ChefRolePost)
+        case miseboxUser(MiseboxUserRolePost)
+        case agent(AgentRolePost)
+        case recruiter(RecruiterRolePost)
+    }
     
-    enum MiseboxUserRolePost: String, RolePost {
-        case created = "Misebox User Created"
-        case deleted = "Misebox User Deleted"
+    public enum ChefRolePost: String {
+        case created, deleted
     }
-
-    enum ChefRolePost: String, RolePost {
-        case created = "Chef Created"
-        case deleted = "Chef Deleted"
+    
+    public enum MiseboxUserRolePost: String {
+        case created, deleted
     }
-
-    enum AgentRolePost: String, RolePost {
-        case created = "Agent Created"
-        case deleted = "Agent Deleted"
-
+    
+    public enum AgentRolePost: String {
+        case created, deleted
     }
-    enum RecruiterRolePost: String, RolePost {
-        case created = "Recruiter Created"
-        case deleted = "Recruiter Deleted"
-
+    
+    public enum RecruiterRolePost: String {
+        case created, deleted
+    }
+    
+    public final class Post: Identifiable {
+        public var id: String
+        public var role: MiseboxEcosystem.Role
+        public var postType: PostType
+        public var title: String
+        public var content: String
+        public var timestamp: Date
+        
+        // Initialize with default UUID
+        public init(id: String = UUID().uuidString, role: MiseboxEcosystem.Role, postType: PostType, title: String, content: String, timestamp: Date) {
+            self.id = id
+            self.role = role
+            self.postType = postType
+            self.title = title
+            self.content = content
+            self.timestamp = timestamp
+        }
+        
     }
 }
-
-extension MiseboxEcosystem {
-    public enum PostRole {
-        case miseboxUser
-        case chef
-        case agent
-        case recruiter
-
-        var rolePosts: [RolePost] {
-            switch self {
-            case .miseboxUser: return [FeedManager.MiseboxUserRolePost.created, FeedManager.MiseboxUserRolePost.deleted]
-            case .chef: return [FeedManager.ChefRolePost.created, FeedManager.ChefRolePost.deleted]
-            case .agent: return [FeedManager.AgentRolePost.created, FeedManager.AgentRolePost.deleted]
-            case .recruiter: return [FeedManager.RecruiterRolePost.created, FeedManager.RecruiterRolePost.deleted]
+extension FeedManager.Post {
+    @ViewBuilder func view() -> some View {
+        switch postType {
+        case .chef(let type):
+            switch type {
+            case .created:
+                FeedManager.ChefCreatedView(role: role, title: title, content: content, timestamp: timestamp)
+            case .deleted:
+                FeedManager.ChefDeletedView(role: role, title: title, content: content, timestamp: timestamp)
+            }
+        case .miseboxUser(let type):
+            switch type {
+            case .created:
+                FeedManager.MiseboxUserCreatedView(role: role, title: title, content: content, timestamp: timestamp)
+            case.deleted:
+                FeedManager.MiseboxDeletedView(role: role, title: title, content: content, timestamp: timestamp)
+            }
+        case .agent(let type):
+            switch type {
+            case .created:
+                FeedManager.AgentCreatedView(role: role, title: title, content: content, timestamp: timestamp)
+            case.deleted:
+                FeedManager.AgentDeletedView(role: role, title: title, content: content, timestamp: timestamp)
+            }
+        case .recruiter(let type):
+            switch type {
+            case .created:
+                FeedManager.RecruiterCreatedView(role: role, title: title, content: content, timestamp: timestamp)
+            case.deleted:
+                FeedManager.RecruiterDeletedView(role: role, title: title, content: content, timestamp: timestamp)
             }
         }
     }
 }
 
-@MainActor
-public final class FeedManager: ObservableObject {
-    @Published public var posts: [Post] = []
-    public var role: MiseboxEcosystem.Role
-    
-    let firestoreManager = FirestoreManager()
-    
-    public var listener: ListenerRegistration?
-    deinit {
-        listener?.remove()
-    }
-    
-    public init(role: MiseboxEcosystem.Role) {
-        self.role = role
-    }
-    
-    public func reset() {
-        posts = []
-    }
-    
-    public func createPost(title: String, content: String, rolePostType: RolePost.Type, additionalData: [String: Any] = [:]) async throws {
-            // The rolePostType parameter is currently not utilized in creating the postData
-            // If role-specific post types are to influence postData, their logic needs to be integrated here
-            let postData: [String: Any] = [
-                "title": title,
-                "content": content,
-                "timestamp": Date(),
-                "roleColor": role.color, // Direct usage of SwiftUI.Color is conceptual; adjust based on your UI/data handling needs
-                "additionalData": additionalData
-            ]
-            
-            try await firestoreManager.addDocument(toCollection: "posts", withData: postData)
-        }
-    struct MiseboxUserPost: RolePost {
-        var postTitle: String
-        var postColor: Color
-    }
-
-    struct ChefPost: RolePost {
-        var postTitle: String
-        var postColor: Color
-    }
-
-    struct AgentPost: RolePost {
-        var postTitle: String
-        var postColor: Color
-    }
-
-    struct RecruiterPost: RolePost {
-        var postTitle: String
-        var postColor: Color
-    }
-
-}
-
-extension FeedManager {
-    public final class Post: Identifiable {
-        
-        public var id: String
-        public var title: String
-        public var content: String
-        public var timestamp: Date
-        public var rolePost: RolePost // Assuming a reference or type information for RolePost
-        
-        // Assuming Role is accessible or passed in some form to indicate which Role this post belongs to
-        public let roleColor: Color
-        
-        public init(id: String = UUID().uuidString, title: String, content: String, timestamp: Date, rolePost: RolePost, roleColor: Color) {
-            self.id = id
-            self.title = title
-            self.content = content
-            self.timestamp = timestamp
-            self.rolePost = rolePost
-            self.roleColor = roleColor // Initialize with the role's color
-        }
-    }
-}
