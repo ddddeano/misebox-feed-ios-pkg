@@ -6,7 +6,6 @@ import FirebaseiOSMisebox
 
 @MainActor
 public final class FeedManager: ObservableObject {
-    @Published public var posts: [Post] = []
     public let role: MiseboxEcosystem.Role
     let firestoreManager = FirestoreManager()
     
@@ -14,21 +13,16 @@ public final class FeedManager: ObservableObject {
     
     public init(role: MiseboxEcosystem.Role) {
         self.role = role
-        subscribeToPostsFilteredByRole()
     }
     
     deinit {
         listener?.remove()
     }
     
-    public func reset() {
-        posts = []
-    }
-    
     public static func createPost(title: String, content: String, role: MiseboxEcosystem.Role, postType: PostType, timestamp: Date = Date(), additionalData: [String: Any] = [:]) async throws {
     }
     
-    private func subscribeToPostsFilteredByRole() {
+    private func subscribeToPostsFilteredByRole(completion: @escaping (Result<[Post], Error>) -> Void) {
         var visibleRoles: [String] = []
         
         // Define visibility based on current role using Role.doc values
@@ -48,20 +42,13 @@ public final class FeedManager: ObservableObject {
         }
         
         // Ensure to adjust the method call according to the new signature
-        self.listener = firestoreManager.listenToPosts(forRoles: visibleRoles) { (result: Result<[Post], Error>) in
+        self.listener = firestoreManager.listenToPosts(forRoles: visibleRoles) { result in
             DispatchQueue.main.async {
-                switch result {
-                case .success(let newPosts):
-                    // self.posts = newPosts
-                    self.loadDummyData(roles: visibleRoles)
-
-                case .failure(let error):
-                    print("Error fetching posts: \(error.localizedDescription)")
-                }
+                completion(result)
             }
         }
     }
-    
+
     func createNewPost(post: Post) async throws {
         do {
             try await firestoreManager.addDocument(toCollection: "posts", withData: post.toFirestore())
