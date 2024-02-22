@@ -11,25 +11,24 @@ import MiseboxiOSGlobal
 extension FeedManager {
 
         public enum ChefRolePost: String, CaseIterable {
-            case created = "created"
-            case deleted = "deleted"
+            case created = "chef_created"
+            case deleted = "chef_deleted"
         }
 
         public enum MiseboxUserRolePost: String, CaseIterable {
-            case created = "created"
-            case deleted = "deleted"
+            case created = "miseboxUser_created"
+            case deleted = "miseboxUser_deleted"
         }
 
         public enum AgentRolePost: String, CaseIterable {
-            case created = "created"
-            case deleted = "deleted"
+            case created = "agent_created"
+            case deleted = "agent_deleted"
         }
 
         public enum RecruiterRolePost: String, CaseIterable {
-            case created = "created"
-            case deleted = "deleted"
+            case created = "recruiter_created"
+            case deleted = "recruiter_deleted"
         }
-
 
     public enum PostType {
         case chef(ChefRolePost)
