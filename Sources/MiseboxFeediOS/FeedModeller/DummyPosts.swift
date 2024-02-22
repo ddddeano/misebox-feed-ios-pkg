@@ -7,7 +7,7 @@
 
 import Foundation
 extension FeedManager {
-    func loadDummyData() {
+    public func loadDummyData() {
         posts = [
             Post(role: .chef, postType: .chef(.created), title: "Chef Alex Joins", content: "Chef Alex has joined our kitchen brigade.", timestamp: Date()),
             Post(role: .chef, postType: .chef(.deleted), title: "Chef Bella Departs", content: "We bid farewell to Chef Bella.", timestamp: Date()),
