@@ -76,7 +76,7 @@ extension FeedManager {
     }
 }
 extension FeedManager.Post {
-    @ViewBuilder func view() -> some View {
+    @ViewBuilder public func view() -> some View {
         switch postType {
         case .chef(let type):
             switch type {
