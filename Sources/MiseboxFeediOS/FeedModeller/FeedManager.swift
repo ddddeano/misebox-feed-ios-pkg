@@ -41,10 +41,15 @@ public final class FeedManager: ObservableObject {
             break
         }
         
+        print("Visible roles in subscribeToPostsFilteredByRole: \(visibleRoles)")
+        
         // Ensure to adjust the method call according to the new signature
-        self.listener = firestoreManager.listenToPosts(forRoles: visibleRoles) { result in
+        let listener = firestoreManager.listenToPosts(forRoles: visibleRoles) { (result: Result<[Post], Error>) in
             DispatchQueue.main.async {
-                completion(result)
+                print("Received result in subscribeToPostsFilteredByRole")
+                // Generate and return dummy data instead
+                let dummyPosts = self.loadDummyData(roles: visibleRoles)
+                completion(.success(dummyPosts))
             }
         }
     }
