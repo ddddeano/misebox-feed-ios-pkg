@@ -37,7 +37,7 @@ extension FeedManager {
         let generatedPosts = sampleData.filter { data in
             return roles.contains(data.role.doc)
         }.map { data in
-            FeedManager.Post(id: UUID().uuidString,
+            FeedManager.Post(
                              role: data.role,
                              postType: data.postType,
                              title: data.title,
@@ -51,52 +51,51 @@ extension FeedManager {
         return generatedPosts
     }
     public func createDummyDataInFirestore() {
-        for _ in 1...10 {
-            // Randomly select a role
-            guard let randomRole = MiseboxEcosystem.Role.allCases.randomElement() else { continue }
-            
-            // Generate a random PostType based on the selected role
-            let postType = generateRandomPostType(for: randomRole)
-            
-            let dummyPost = Post(
-                id: UUID().uuidString,
-                role: randomRole,
-                postType: postType,
-                title: "Dummy Title",
-                content: "Dummy content for Firestore. Role: \(randomRole.doc)",
-                timestamp: Date()
-            )
-            
-            Task {
-                do {
-                    try await firestoreManager.addDocument(toCollection: "posts", withData: dummyPost.toFirestore())
-                    print("Dummy post created successfully for role \(randomRole.doc).")
-                } catch {
-                    print("Error creating dummy post for role \(randomRole.doc): \(error.localizedDescription)")
-                }
-            }
-        }
-    }
-    
-    // Adjusted to use Role instead of an enum
-    private func generateRandomPostType(for role: MiseboxEcosystem.Role) -> FeedManager.PostType {
-        // Example random selection logic based on the role.doc property
-        switch role.doc {
-        case "chef":
-            let chefTypes: [FeedManager.ChefRolePost] = [.created, .deleted] // Update as necessary
-            return .chef(chefTypes.randomElement() ?? .created)
-        case "misebox-user":
-            let userTypes: [FeedManager.MiseboxUserRolePost] = [.created, .deleted] // Update as necessary
-            return .miseboxUser(userTypes.randomElement() ?? .created)
-        case "agent":
-            let agentTypes: [FeedManager.AgentRolePost] = [.created, .deleted] // Update as necessary
-            return .agent(agentTypes.randomElement() ?? .created)
-        case "recruiter":
-            let recruiterTypes: [FeedManager.RecruiterRolePost] = [.created, .deleted] // Update as necessary
-            return .recruiter(recruiterTypes.randomElement() ?? .created)
-        default:
-            // Fallback for undefined roles
-            return .miseboxUser(.created)
-        }
-    }
-}
+         for _ in 1...10 {
+             // Randomly select a role
+             guard let randomRole = MiseboxEcosystem.Role.allCases.randomElement() else { continue }
+             
+             // Generate a random PostType based on the selected role
+             let postType = generateRandomPostType(for: randomRole)
+             
+             // Create a Post instance using the selected role and postType
+             let dummyPost = Post(
+                 role: randomRole,
+                 postType: postType,
+                 title: "Dummy Title",
+                 content: "Dummy content for Firestore. Role: \(randomRole.doc)",
+                 timestamp: Date()
+             )
+             
+             Task {
+                 do {
+                     // Convert the Post to a Firestore-compatible format and add it to the collection
+                     try await firestoreManager.addDocument(toCollection: "posts", withData: dummyPost.toFirestore())
+                     print("Dummy post created successfully for role \(randomRole.doc).")
+                 } catch {
+                     print("Error creating dummy post for role \(randomRole.doc): \(error.localizedDescription)")
+                 }
+             }
+         }
+     }
+     
+     // This method remains unchanged, correctly generating a random PostType
+     private func generateRandomPostType(for role: MiseboxEcosystem.Role) -> FeedManager.PostType {
+         switch role.doc {
+         case "chef":
+             let chefTypes: [FeedManager.ChefRolePost] = [.created, .deleted]
+             return .chef(chefTypes.randomElement() ?? .created)
+         case "misebox-user":
+             let userTypes: [FeedManager.MiseboxUserRolePost] = [.created, .deleted]
+             return .miseboxUser(userTypes.randomElement() ?? .created)
+         case "agent":
+             let agentTypes: [FeedManager.AgentRolePost] = [.created, .deleted]
+             return .agent(agentTypes.randomElement() ?? .created)
+         case "recruiter":
+             let recruiterTypes: [FeedManager.RecruiterRolePost] = [.created, .deleted]
+             return .recruiter(recruiterTypes.randomElement() ?? .created)
+         default:
+             return .miseboxUser(.created) // Fallback for undefined roles
+         }
+     }
+ }

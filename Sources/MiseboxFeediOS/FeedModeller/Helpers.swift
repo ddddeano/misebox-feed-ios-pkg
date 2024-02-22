@@ -9,43 +9,64 @@ import Foundation
 import MiseboxiOSGlobal
 
 extension FeedManager {
+
+        public enum ChefRolePost: String, CaseIterable {
+            case created = "created"
+            case deleted = "deleted"
+        }
+
+        public enum MiseboxUserRolePost: String, CaseIterable {
+            case created = "created"
+            case deleted = "deleted"
+        }
+
+        public enum AgentRolePost: String, CaseIterable {
+            case created = "created"
+            case deleted = "deleted"
+        }
+
+        public enum RecruiterRolePost: String, CaseIterable {
+            case created = "created"
+            case deleted = "deleted"
+        }
+
+
     public enum PostType {
         case chef(ChefRolePost)
         case miseboxUser(MiseboxUserRolePost)
         case agent(AgentRolePost)
         case recruiter(RecruiterRolePost)
         
-        // Example encoder function
-        func encodeToFirestore() -> [String: Any] {
-            switch self {
-            case .chef(let type):
-                return ["type": "chef", "subtype": type.rawValue]
-            case .miseboxUser(let type):
-                return ["type": "miseboxUser", "subtype": type.rawValue]
-            case .agent(let type):
-                return ["type": "agent", "subtype": type.rawValue]
-            case .recruiter(let type):
-                return ["type": "recruiter", "subtype": type.rawValue]
-            }
-        }
+        func serialize() -> String {
+               switch self {
+               case .chef(let type):
+                   return "chef_\(type.rawValue)"
+               case .miseboxUser(let type):
+                   return "miseboxUser_\(type.rawValue)"
+               case .agent(let type):
+                   return "agent_\(type.rawValue)"
+               case .recruiter(let type):
+                   return "recruiter_\(type.rawValue)"
+               }
+           }
         
-        // Example decoder function
-        static func decodeFromFirestore(data: [String: Any]) -> PostType? {
-            guard let type = data["type"] as? String, let subtype = data["subtype"] as? String else { return nil }
-            switch type {
-            case "chef":
-                if let chefType = ChefRolePost(rawValue: subtype) {
+        static func create(role: String, type: String) -> PostType? {
+                switch role {
+                case "chef":
+                    guard let chefType = ChefRolePost(rawValue: type) else { return nil }
                     return .chef(chefType)
-                }
-            case "miseboxUser":
-                if let userType = MiseboxUserRolePost(rawValue: subtype) {
+                case "miseboxUser":
+                    guard let userType = MiseboxUserRolePost(rawValue: type) else { return nil }
                     return .miseboxUser(userType)
-                }
-                // Add cases for other types
-            default:
-                return nil
+                case "agent":
+                    guard let agentType = AgentRolePost(rawValue: type) else { return nil }
+                    return .agent(agentType)
+                case "recruiter":
+                    guard let recruiterType = RecruiterRolePost(rawValue: type) else { return nil }
+                    return .recruiter(recruiterType)
+                default:
+                    return nil
             }
-            return nil
         }
     }
 }
