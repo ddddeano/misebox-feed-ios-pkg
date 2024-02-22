@@ -13,7 +13,6 @@ public final class FeedManager: ObservableObject {
     
     public init(role: MiseboxEcosystem.Role) {
         self.role = role
-        createDummyDataInFirestore()
     }
     
     deinit {
