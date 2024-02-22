@@ -7,20 +7,19 @@
 
 import Foundation
 extension FeedManager {
-    public enum ChefRolePost: String {
-        case created, deleted
+    public enum ChefRolePost: String, CaseIterable {
+        case created, deleted // Add other cases as needed
     }
     
-    public enum MiseboxUserRolePost: String {
-        case created, deleted
+    public enum MiseboxUserRolePost: String, CaseIterable {
+        case created, deleted // Add other cases as needed
     }
-    
-    public enum AgentRolePost: String {
-        case created, deleted
+
+    public enum AgentRolePost: String, CaseIterable {
+        case created, deleted // Add other cases as needed
     }
-    
-    public enum RecruiterRolePost: String {
-        case created, deleted
+
+    public enum RecruiterRolePost: String, CaseIterable {
+        case created, deleted // Add other cases as needed
     }
-    
 }
