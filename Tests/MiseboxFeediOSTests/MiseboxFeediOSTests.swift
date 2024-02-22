@@ -1,5 +1,5 @@
 import XCTest
-@testable import MiseboxFeediOS
+@testable import MiseboxiOSFeed
 
 final class MiseboxFeediOSTests: XCTestCase {
     func testExample() throws {

@@ -9,24 +9,24 @@ public final class FeedManager: ObservableObject {
     @Published public var posts: [Post] = []
     public let role: MiseboxEcosystem.Role
     let firestoreManager = FirestoreManager()
-
+    
     public var listener: ListenerRegistration?
-
+    
     public init(role: MiseboxEcosystem.Role) {
         self.role = role
     }
-
+    
     deinit {
         listener?.remove()
     }
-
+    
     public func reset() {
         posts = []
     }
-
+    
     public static func createPost(title: String, content: String, role: MiseboxEcosystem.Role, postType: PostType, timestamp: Date = Date(), additionalData: [String: Any] = [:]) async throws {
     }
-
+    
     private func subscribeToPostsFilteredByRole() {
         var visibleRoles: [String] = []
         
@@ -45,20 +45,30 @@ public final class FeedManager: ObservableObject {
             // Handle default case if your role matching is exhaustive, this might not be needed
             break
         }
+        
+        // Ensure to adjust the method call according to the new signature
+        self.listener = firestoreManager.listenToPosts(forRoles: visibleRoles) { (result: Result<[Post], Error>) in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let newPosts):
+                    // self.posts = newPosts
+                    self.loadDummyData(roles: visibleRoles)
 
-        // Query Firestore based on visibleRoles, assuming 'roleDoc' field in Firestore documents
-        listener = firestoreManager.db.collection("posts")
-            .whereField("roleDoc", in: visibleRoles)
-            .addSnapshotListener { [weak self] querySnapshot, error in
-                guard let documents = querySnapshot?.documents else {
-                    print("Error fetching documents: \(error?.localizedDescription ?? "Unknown error")")
-                    return
-                }
-                
-                self?.posts = documents.compactMap { document -> Post? in
-                    try? document.data(as: Post.self) // Assuming Post conforms to Decodable or similar
+                case .failure(let error):
+                    print("Error fetching posts: \(error.localizedDescription)")
                 }
             }
+        }
+    }
+    
+    func createNewPost(post: Post) async throws {
+        do {
+            try await firestoreManager.addDocument(toCollection: "posts", withData: post.toFirestore())
+            print("Post successfully created.")
+        } catch {
+            print("Error creating post: \(error.localizedDescription)")
+            throw error // Propagate the error
+        }
     }
 }
 
@@ -68,7 +78,42 @@ extension FeedManager {
         case miseboxUser(MiseboxUserRolePost)
         case agent(AgentRolePost)
         case recruiter(RecruiterRolePost)
+        
+        // Example encoder function
+        func encodeToFirestore() -> [String: Any] {
+            switch self {
+            case .chef(let type):
+                return ["type": "chef", "subtype": type.rawValue]
+            case .miseboxUser(let type):
+                return ["type": "miseboxUser", "subtype": type.rawValue]
+            case .agent(let type):
+                return ["type": "agent", "subtype": type.rawValue]
+            case .recruiter(let type):
+                return ["type": "recruiter", "subtype": type.rawValue]
+            }
+        }
+        
+        // Example decoder function
+        static func decodeFromFirestore(data: [String: Any]) -> PostType? {
+            guard let type = data["type"] as? String, let subtype = data["subtype"] as? String else { return nil }
+            switch type {
+            case "chef":
+                if let chefType = ChefRolePost(rawValue: subtype) {
+                    return .chef(chefType)
+                }
+            case "miseboxUser":
+                if let userType = MiseboxUserRolePost(rawValue: subtype) {
+                    return .miseboxUser(userType)
+                }
+                // Add cases for other types
+            default:
+                return nil
+            }
+            return nil
+        }
     }
+    
+    
     
     public enum ChefRolePost: String {
         case created, deleted
@@ -86,16 +131,17 @@ extension FeedManager {
         case created, deleted
     }
     
-    public final class Post: Identifiable {
+    
+    public final class Post: Identifiable, FeedPost {
         public var id: String
-        public var role: MiseboxEcosystem.Role
-        public var postType: PostType
-        public var title: String
-        public var content: String
-        public var timestamp: Date
+        var role: MiseboxEcosystem.Role
+        var postType: FeedManager.PostType
+        var title: String
+        var content: String
+        var timestamp: Date
         
-        // Initialize with default UUID
-        public init(id: String = UUID().uuidString, role: MiseboxEcosystem.Role, postType: PostType, title: String, content: String, timestamp: Date) {
+        // Initialize directly for dummy data or specific use cases
+        init(id: String = UUID().uuidString, role: MiseboxEcosystem.Role, postType: FeedManager.PostType, title: String, content: String, timestamp: Date) {
             self.id = id
             self.role = role
             self.postType = postType
@@ -104,8 +150,40 @@ extension FeedManager {
             self.timestamp = timestamp
         }
         
+        // Initialize from Firestore DocumentSnapshot
+        public required init?(document: DocumentSnapshot) {
+            guard let data = document.data(),
+                  let roleDoc = data["role"] as? String,
+                  let resolvedRole = MiseboxEcosystem.Role.find(byDoc: roleDoc),
+                  let postTypeData = data["postType"] as? [String: Any],
+                  let decodedPostType = FeedManager.PostType.decodeFromFirestore(data: postTypeData),
+                  let title = data["title"] as? String,
+                  let content = data["content"] as? String,
+                  let timestamp = (data["timestamp"] as? Timestamp)?.dateValue() else {
+                return nil
+            }
+            
+            self.id = document.documentID
+            self.role = resolvedRole
+            self.postType = decodedPostType
+            self.title = title
+            self.content = content
+            self.timestamp = timestamp
+        }
+        
+        // Convert Post to Firestore data format
+        public func toFirestore() -> [String: Any] {
+            return [
+                "title": title,
+                "content": content,
+                "role": role.doc, // Use the role's document identifier
+                "timestamp": Timestamp(date: timestamp),
+                "postType": postType.encodeToFirestore()
+            ]
+        }
     }
 }
+
 extension FeedManager.Post {
     @ViewBuilder public func view() -> some View {
         switch postType {
