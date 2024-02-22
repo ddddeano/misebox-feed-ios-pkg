@@ -10,7 +10,7 @@ import FirebaseFirestore
 import MiseboxiOSGlobal
 
 extension FeedManager {
-    public func loadDummyData(roles: [String]) {
+    public func loadDummyData(roles: [String]) -> [Post] {
         // Helper to generate different timestamps
         func generateTimestamp(daysBack: Int) -> Date {
             let secondsInDay = 86400
@@ -31,7 +31,7 @@ extension FeedManager {
         ]
         
         // Filter by roles and map to Post instances
-        posts = sampleData.filter { data in
+        return sampleData.filter { data in
             return roles.contains(data.role.doc)
         }.map { data in
             Post(id: UUID().uuidString,
@@ -43,3 +43,4 @@ extension FeedManager {
         }
     }
 }
+
