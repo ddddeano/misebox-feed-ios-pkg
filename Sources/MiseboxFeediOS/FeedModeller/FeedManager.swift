@@ -22,7 +22,7 @@ public final class FeedManager: ObservableObject {
     public static func createPost(title: String, content: String, role: MiseboxEcosystem.Role, postType: PostType, timestamp: Date = Date(), additionalData: [String: Any] = [:]) async throws {
     }
     
-    private func subscribeToPostsFilteredByRole(completion: @escaping (Result<[Post], Error>) -> Void) {
+    public func subscribeToPostsFilteredByRole(completion: @escaping (Result<[Post], Error>) -> Void) {
         var visibleRoles: [String] = []
         
         // Define visibility based on current role using Role.doc values
