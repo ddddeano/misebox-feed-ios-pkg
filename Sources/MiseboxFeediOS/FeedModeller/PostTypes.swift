@@ -6,3 +6,21 @@
 //
 
 import Foundation
+extension FeedManager {
+    public enum ChefRolePost: String {
+        case created, deleted
+    }
+    
+    public enum MiseboxUserRolePost: String {
+        case created, deleted
+    }
+    
+    public enum AgentRolePost: String {
+        case created, deleted
+    }
+    
+    public enum RecruiterRolePost: String {
+        case created, deleted
+    }
+    
+}

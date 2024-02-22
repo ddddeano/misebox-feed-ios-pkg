@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import MiseboxiOSGlobal
+
 extension FeedManager {
     public enum PostType {
         case chef(ChefRolePost)
@@ -47,3 +49,23 @@ extension FeedManager {
         }
     }
 }
+extension MiseboxEcosystem.Role {
+    func visibleRoles() -> [String] {
+        switch self {
+        case .miseboxUser:
+            return MiseboxEcosystem.Role.allCases.map { $0.doc }
+        case .agent:
+            return [MiseboxEcosystem.Role.recruiter.doc]
+        case .chef:
+            // Assuming chefs have specific or no visibility, return an empty array or specific roles
+            return []
+        case .recruiter:
+            return [MiseboxEcosystem.Role.agent.doc]
+        default:
+            // Handle any other cases if your enum isn't exhaustive
+            // If your switch is exhaustive, you may not need this
+            return []
+        }
+    }
+}
+
