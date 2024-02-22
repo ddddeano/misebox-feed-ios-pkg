@@ -40,7 +40,7 @@ public final class FeedManager: ObservableObject {
             // Handle default case if your role matching is exhaustive, this might not be needed
             break
         }
-        
+        print("role, \(role)")
         print("Visible roles in subscribeToPostsFilteredByRole: \(visibleRoles)")
         
         // Ensure to adjust the method call according to the new signature
