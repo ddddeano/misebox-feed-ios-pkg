@@ -21,14 +21,22 @@ public final class FeedManager: ObservableObject {
 
     public func subscribeToPostsFilteredByRole(completion: @escaping (Result<[Post], Error>) -> Void) {
         let visibleRoles = role.visibleRoles()
-        // Assuming firestoreManager.listenToPosts is correctly set up to fetch posts based on roles
+        
+        // Print the roles we're about to query for debugging
+        print("Subscribing to posts filtered by roles: \(visibleRoles)")
+        
         self.listener = firestoreManager.listenToPosts(forRoles: visibleRoles) { (result: Result<[Post], Error>) in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let posts):
-                    print("Received posts from Firestore in subscribeToPostsFilteredByRole")
+                    // Print the count of posts received for debugging
+                    print("Received \(posts.count) posts from Firestore in subscribeToPostsFilteredByRole")
+                    if posts.isEmpty {
+                        print("Note: The posts array is empty. Check if there are posts matching the roles: \(visibleRoles)")
+                    }
                     completion(.success(posts))
                 case .failure(let error):
+                    // Print the error received from Firestore
                     print("Error fetching posts: \(error.localizedDescription)")
                     completion(.failure(error))
                 }
