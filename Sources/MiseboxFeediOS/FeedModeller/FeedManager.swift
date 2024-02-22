@@ -1,7 +1,7 @@
 import Foundation
 import FirebaseFirestore
 import SwiftUI
-import GlobalMiseboxiOS
+import MiseboxiOSGlobal
 import FirebaseiOSMisebox
 
 @MainActor
@@ -28,6 +28,37 @@ public final class FeedManager: ObservableObject {
     }
 
     private func subscribeToPostsFilteredByRole() {
+        var visibleRoles: [String] = []
+        
+        // Define visibility based on current role using Role.doc values
+        switch role {
+        case MiseboxEcosystem.Role.miseboxUser:
+            visibleRoles = MiseboxEcosystem.Role.allCases.map { $0.doc }
+        case MiseboxEcosystem.Role.agent:
+            visibleRoles = [MiseboxEcosystem.Role.recruiter.doc]
+        case MiseboxEcosystem.Role.chef:
+            // Blank for now, assuming chefs cannot see any posts or only specific types
+            visibleRoles = []
+        case MiseboxEcosystem.Role.recruiter:
+            visibleRoles = [MiseboxEcosystem.Role.agent.doc]
+        default:
+            // Handle default case if your role matching is exhaustive, this might not be needed
+            break
+        }
+
+        // Query Firestore based on visibleRoles, assuming 'roleDoc' field in Firestore documents
+        listener = firestoreManager.db.collection("posts")
+            .whereField("roleDoc", in: visibleRoles)
+            .addSnapshotListener { [weak self] querySnapshot, error in
+                guard let documents = querySnapshot?.documents else {
+                    print("Error fetching documents: \(error?.localizedDescription ?? "Unknown error")")
+                    return
+                }
+                
+                self?.posts = documents.compactMap { document -> Post? in
+                    try? document.data(as: Post.self) // Assuming Post conforms to Decodable or similar
+                }
+            }
     }
 }
 

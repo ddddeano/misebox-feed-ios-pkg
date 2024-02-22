@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import GlobalMiseboxiOS
+import MiseboxiOSGlobal
 
 extension FeedManager {
     

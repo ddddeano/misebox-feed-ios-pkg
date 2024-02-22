@@ -12,18 +12,15 @@ let package = Package(
             targets: ["MiseboxiOSFeed"]),
     ],
     dependencies: [
-        // Ensure these URLs and versions match the actual accessible locations and versions
         .package(url: "https://github.com/ddddeano/FirebaseiOSMisebox.git", from: "1.1.7"),
-        .package(url: "https://github.com/ddddeano/GlobalMiseboxiOS.git", from: "1.0.38")
+        .package(url: "https://github.com/ddddeano/misebox-ios-global-pkg.git", from: "1.0.1")
     ],
     targets: [
         .target(
             name: "MiseboxiOSFeed",
             dependencies: [
-                // Assuming the package products are named after the package itself
-                // Replace "FirebaseiOSMisebox" and "GlobalMiseboxiOS" with the actual product names if they differ
                 .product(name: "FirebaseiOSMisebox", package: "FirebaseiOSMisebox"),
-                .product(name: "GlobalMiseboxiOS", package: "GlobalMiseboxiOS")
+                .product(name: "MiseboxiOSGlobal", package: "misebox-ios-global-pkg")
             ]),
         .testTarget(
             name: "MiseboxiOSFeedTests",

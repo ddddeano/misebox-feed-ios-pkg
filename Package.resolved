@@ -136,6 +136,15 @@
       }
     },
     {
+      "identity" : "misebox-ios-global-pkg",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ddddeano/misebox-ios-global-pkg.git",
+      "state" : {
+        "revision" : "87d52851e88ffbec782b3ba67825ed365aafd0f3",
+        "version" : "1.0.2"
+      }
+    },
+    {
       "identity" : "nanopb",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/nanopb.git",
