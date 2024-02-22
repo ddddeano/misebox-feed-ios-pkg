@@ -10,7 +10,6 @@ import FirebaseFirestore
 import MiseboxiOSGlobal
 
 extension FeedManager {
-    
     public func loadDummyData(roles: [String]) -> [FeedManager.Post] {
         // Helper to generate different timestamps
         func generateTimestamp(daysBack: Int) -> Date {
