@@ -24,7 +24,7 @@ extension FeedManager {
                 Text(timestamp, style: .date).font(.caption)
             }
             .padding()
-            .background(role.color.opacity(0.2))
+            .background(role.appLight.opacity(0.2))
             .cornerRadius(8)
         }
     }
@@ -42,7 +42,7 @@ extension FeedManager {
                 Text(timestamp, style: .date).font(.caption)
             }
             .padding()
-            .background(role.color.opacity(0.2))
+            .background(role.appLight.opacity(0.2))
             .cornerRadius(8)
         }
     }
@@ -61,7 +61,7 @@ extension FeedManager {
                 Text(timestamp, style: .date).font(.caption)
             }
             .padding()
-            .background(role.color.opacity(0.2))
+            .background(role.appLight.opacity(0.2))
             .cornerRadius(8)
         }
     }
@@ -79,7 +79,7 @@ extension FeedManager {
                 Text(timestamp, style: .date).font(.caption)
             }
             .padding()
-            .background(role.color.opacity(0.2))
+            .background(role.appLight.opacity(0.2))
             .cornerRadius(8)
         }
     }
@@ -97,7 +97,7 @@ extension FeedManager {
                 Text(timestamp, style: .date).font(.caption)
             }
             .padding()
-            .background(role.color.opacity(0.2))
+            .background(role.appLight.opacity(0.2))
             .cornerRadius(8)
         }
     }
@@ -115,7 +115,7 @@ extension FeedManager {
                 Text(timestamp, style: .date).font(.caption)
             }
             .padding()
-            .background(role.color.opacity(0.2))
+            .background(role.appLight.opacity(0.2))
             .cornerRadius(8)
         }
     }
@@ -133,7 +133,7 @@ extension FeedManager {
                 Text(timestamp, style: .date).font(.caption)
             }
             .padding()
-            .background(role.color.opacity(0.2))
+            .background(role.appLight.opacity(0.2))
             .cornerRadius(8)
         }
     }
@@ -151,7 +151,7 @@ extension FeedManager {
                 Text(timestamp, style: .date).font(.caption)
             }
             .padding()
-            .background(role.color.opacity(0.2))
+            .background(role.appLight.opacity(0.2))
             .cornerRadius(8)
         }
     }
